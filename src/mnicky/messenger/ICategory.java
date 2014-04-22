@@ -1,5 +1,5 @@
 package mnicky.messenger;
 
-public interface Category {
+public interface ICategory {
 
 }
