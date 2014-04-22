@@ -10,9 +10,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class SMEDownloader {
+public class SMEDownloader implements IDownloader {
 
-	public static enum Category {
+	public static enum Category implements ICategory {
 		DOMACE, ZAHRANICNE, EKONOMIKA_SK, EKONOMIKA_SVET, KULTURA, KOMENTARE
 	}
 
@@ -29,10 +29,10 @@ public class SMEDownloader {
 	 * @param delay how much miliseconds to wait after every article download
 	 * @return list of downloaded Articles
 	 */
-	public List<Article> fetchLast(final int n, final Category category, final int delay) {
+	public List<Article> fetchLast(int n, ICategory category, int delay) {
 		final List<Article> articles = new ArrayList<Article>();
 		final int max = n;
-		String categoryUrl = categoryURL(category);
+		final String categoryUrl = categoryURL((Category)category);
 		
 		int categorySubpage = 1;
 		while (articles.size() < max && categorySubpage <= 50) {
@@ -42,10 +42,9 @@ public class SMEDownloader {
 			
 			//fetch articles
 			for (final String url : articleUrls) {
-				final Article article = getArticle(url, category);
+				final Article article = getArticle(url, (Category)category);
 				if (article != null) {
 					articles.add(article);
-					//System.out.println(article);
 				}
 				else {
 					System.err.println("WARNING: can't fetch article from url: " + url);
@@ -65,6 +64,7 @@ public class SMEDownloader {
 		return articles;
 	}
 
+	/** Return URLs of articles collected from given category (sub)page */
 	private List<String> getArticleURLs(final String categoryUrl) {
 		final List<String> urls = new ArrayList<String>();
 		try {
@@ -82,7 +82,7 @@ public class SMEDownloader {
 		return urls;
 	}
 
-	private Article getArticle(final String articleUrl, Category category) {
+	private Article getArticle(final String articleUrl, final Category category) {
 		final String fetchUrl = makeMobileUrl(articleUrl);
 		Article article = null;
 		
