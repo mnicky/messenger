@@ -26,7 +26,7 @@ public class SMEDownloader {
 	 * 
 	 * @param n how many articles to download
 	 * @param category category to get articles from
-	 * @param delay how much seconds to wait after every article download
+	 * @param delay how much miliseconds to wait after every article download
 	 * @return list of downloaded Articles
 	 */
 	public List<Article> fetchLast(final int n, final Category category, final int delay) {
