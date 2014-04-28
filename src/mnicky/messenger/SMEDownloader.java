@@ -1,6 +1,7 @@
 package mnicky.messenger;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,6 +94,16 @@ public class SMEDownloader implements IDownloader {
 				//make url
 				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
 				
+				//parse date
+				final Elements dateElem = page.select(".pagewrap small");
+				Date date = null;
+				if (!dateElem.isEmpty())
+					date = Util.parseDate(dateElem.first().text().trim());
+				if (date == null) {
+					date = new Date();
+					System.err.println("WARNING: can't parse date (and time). The element was: '" + dateElem.toString() + "'");
+				}
+
 				//parse title
 				final Elements titleElem = page.select(".pagewrap h1");
 				if (titleElem.isEmpty())
@@ -111,7 +122,7 @@ public class SMEDownloader implements IDownloader {
 					return null;
 				final String text = page.select(".pagewrap p").text().trim();				
 				
-				article = new Article(url, title, perex, text);
+				article = new Article(url, date, title, perex, text);
 	
 			} catch (Exception e) {
 				System.err.println("Exception when fetching article from: " + articleUrl + " - " + fetchUrl);
@@ -164,7 +175,7 @@ public class SMEDownloader implements IDownloader {
 		SMEDownloader sme = new SMEDownloader();
 		
 		long start1 = System.nanoTime();
-		List<Article> dom = sme.fetchLast(21, Category.KULTURA, 300);
+		List<Article> dom = sme.fetchLast(21, Category.DOMACE, 300);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
@@ -173,7 +184,7 @@ public class SMEDownloader implements IDownloader {
 		System.out.println("******************************************");
 		
 		long start2 = System.nanoTime();
-		List<Article> zah = sme.fetchLast(21, Category.KOMENTARE, 300);
+		List<Article> zah = sme.fetchLast(21, Category.EKONOMIKA_SK, 300);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);

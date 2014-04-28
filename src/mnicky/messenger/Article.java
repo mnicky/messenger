@@ -1,18 +1,19 @@
 package mnicky.messenger;
 
+import java.util.Date;
+
 
 public class Article {
 	final String url;
-	//TODO: final Date date;
+	final Date date;
 	
 	final String title;
 	final String perex;
 	final String text;
 	
-	public Article(final String url, /* final Date date,*/ final String title, final String perex, final String text) {
+	public Article(final String url, final Date date, final String title, final String perex, final String text) {
 		this.url = url;
-		//this.date = date;
-		
+		this.date = date;
 		this.title = title;
 		this.perex = perex;
 		this.text = text;
@@ -22,6 +23,7 @@ public class Article {
 	public String toString() {
 		return "Article [\n"
 				+ "  url=" + url + "\n"
+				+ "  date=" + date + "\n"
 				+ "  title=" + title + "\n"
 				+ "  perex=" + perex + "\n"
 				+ "  text=" + text + "\n"
