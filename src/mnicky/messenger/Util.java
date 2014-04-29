@@ -24,11 +24,12 @@ public class Util {
 	private static String time = "(?:" + hours + timeDelimiter + minutes + "(?:" +  timeDelimiter + seconds + ")?" + ")";
 	private static Pattern datePattern = Pattern.compile(date + "(?:" +  dateTimeDelimiter + time + ")?");
 	
-	/** Returns parsed elements (tries all paths in given order) or null if can't find any of given paths. */
-	public static Elements getElements(final Document doc, final String... pathsToTry) {
+	//TODO: add AND functionality? (this provides OR). think of proper abstraction and/or composition
+	/** Returns parsed elements (tries all selectors in given order) or null if can't find any of given selectors. */
+	public static Elements getElements(final Document doc, final String... selectorsToTry) {
 		Elements elements = new Elements();
-		for (int i = 0; i < pathsToTry.length; i++) {
-			elements = doc.select(pathsToTry[i]);
+		for (int i = 0; i < selectorsToTry.length; i++) {
+			elements = doc.select(selectorsToTry[i]);
 			if (!elements.isEmpty()) {
 				break;
 			}
