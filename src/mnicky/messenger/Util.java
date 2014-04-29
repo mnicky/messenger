@@ -6,6 +6,9 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 public class Util {
 
 	private static String dateDelimiter = "[\\.\\-/ ]{1,3}";
@@ -21,6 +24,19 @@ public class Util {
 	private static String time = "(?:" + hours + timeDelimiter + minutes + "(?:" +  timeDelimiter + seconds + ")?" + ")";
 	private static Pattern datePattern = Pattern.compile(date + "(?:" +  dateTimeDelimiter + time + ")?");
 	
+	/** Returns parsed elements (tries all paths in given order) or null if can't find any of given paths. */
+	public static Elements getElements(final Document doc, final String... pathsToTry) {
+		Elements elements = new Elements();
+		for (int i = 0; i < pathsToTry.length; i++) {
+			elements = doc.select(pathsToTry[i]);
+			if (!elements.isEmpty()) {
+				break;
+			}
+			//TODO: add prints in debug mode
+		}
+		return elements;
+	}
+
 	/** Returns date or null if can't parse the given string. */
 	public static Date parseDate(final String dateString) {
 		Date date = null;

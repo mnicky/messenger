@@ -21,7 +21,8 @@ public class SMEDownloader implements IDownloader {
 	//private final String USERAGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36";
 	private final String ARTICLE_FETCH_URL = "http://s.sme.sk/export/phone/html/?cf=";
 	private final Pattern ARTICLE_ID_PATTERN = Pattern.compile("(?:.*sme.sk)?/c/(\\d+).*");
-	private final Pattern CATEGORY_BASEURL_PATTERN = Pattern.compile("(http://.*.sme.sk)(?:/.*)?");
+	private final Pattern CATEGORY_BASEURL_PATTERN = Pattern.compile("(http://.*sme.sk)(?:/.*)?");
+	private final int MAX_CATEGORY_SUBPAGE = 50;
 
 	/** Download last 'n' articles from given SME.sk category.
 	 * 
@@ -36,7 +37,8 @@ public class SMEDownloader implements IDownloader {
 		final String categoryUrl = categoryURL((Category)category);
 		
 		int categorySubpage = 1;
-		while (articles.size() < max && categorySubpage <= 50) {
+		//TODO: add counter of unsuccessful tries and use it to stop downloading
+		while (articles.size() < max && categorySubpage <= MAX_CATEGORY_SUBPAGE) {
 			
 			//get article urls from the next category subpage
 			final List<String> articleUrls = getArticleURLs(categoryUrl + categorySubpage);
@@ -48,7 +50,7 @@ public class SMEDownloader implements IDownloader {
 					articles.add(article);
 				}
 				else {
-					System.err.println("WARNING: can't fetch article from url: " + url);
+					System.err.println("WARNING: can't fetch or parse article from url: " + url);
 				}
 				try {
 					Thread.sleep(delay);
@@ -70,7 +72,7 @@ public class SMEDownloader implements IDownloader {
 		final List<String> urls = new ArrayList<String>();
 		try {
 			final Document page = Jsoup.connect(categoryUrl).get();
-			final Elements articleLinks = page.select("#contentw h3 > a");
+			final Elements articleLinks = Util.getElements(page, "#contentw h3 > a");
 			for (final Element e : articleLinks) {
 				final String url = e.attr("href");
 				if (!url.isEmpty())
@@ -83,6 +85,7 @@ public class SMEDownloader implements IDownloader {
 		return urls;
 	}
 
+	/** Returns parsed article or null if can't parse given url. */
 	private Article getArticle(final String articleUrl, final Category category) {
 		final String fetchUrl = makeMobileUrl(articleUrl);
 		Article article = null;
@@ -95,7 +98,7 @@ public class SMEDownloader implements IDownloader {
 				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
 				
 				//parse date
-				final Elements dateElem = page.select(".pagewrap small");
+				final Elements dateElem = Util.getElements(page, ".pagewrap small");
 				Date date = null;
 				if (!dateElem.isEmpty())
 					date = Util.parseDate(dateElem.first().text().trim());
@@ -105,22 +108,22 @@ public class SMEDownloader implements IDownloader {
 				}
 
 				//parse title
-				final Elements titleElem = page.select(".pagewrap h1");
+				final Elements titleElem = Util.getElements(page, ".pagewrap h1");
 				if (titleElem.isEmpty())
 					return null;
 				final String title = titleElem.first().text().trim();
 				
 				//parse perex
-				final Elements perexElem = page.select(".pagewrap p strong");
+				final Elements perexElem = Util.getElements(page, ".pagewrap p strong");
 				String perex = "";
 				if (!perexElem.isEmpty())
 					perex = perexElem.first().text().trim();
 				
 				//parse article text
-				final Elements textElem = page.select(".pagewrap p");
+				final Elements textElem = Util.getElements(page, ".pagewrap p");
 				if (textElem.isEmpty())
 					return null;
-				final String text = page.select(".pagewrap p").text().trim();				
+				final String text = textElem.text().trim();
 				
 				article = new Article(url, date, title, perex, text);
 	
@@ -175,7 +178,7 @@ public class SMEDownloader implements IDownloader {
 		SMEDownloader sme = new SMEDownloader();
 		
 		long start1 = System.nanoTime();
-		List<Article> dom = sme.fetchLast(21, Category.DOMACE, 300);
+		List<Article> dom = sme.fetchLast(21, Category.KOMENTARE, 300);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
@@ -184,7 +187,7 @@ public class SMEDownloader implements IDownloader {
 		System.out.println("******************************************");
 		
 		long start2 = System.nanoTime();
-		List<Article> zah = sme.fetchLast(21, Category.EKONOMIKA_SK, 300);
+		List<Article> zah = sme.fetchLast(21, Category.KULTURA, 300);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);
