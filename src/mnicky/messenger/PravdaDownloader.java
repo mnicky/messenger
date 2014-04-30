@@ -7,12 +7,12 @@ public class PravdaDownloader extends ADownloader {
 	
 	public static enum Category implements ICategory {
 		
-		DOMACE		("http://spravy.pravda.sk/domace/strana-"),
-		SVET		("http://spravy.pravda.sk/svet/strana-"),
-		EKONOMIKA	("http://spravy.pravda.sk/ekonomika/strana-"),
-		REGIONY		("http://spravy.pravda.sk/regiony/strana-"),
-		KULTURA		("http://kultura.pravda.sk/strana-"),
-		NAZORY		("http://nazory.pravda.sk/strana-");
+		DOMACE    ("http://spravy.pravda.sk/domace/strana-"),
+		SVET      ("http://spravy.pravda.sk/svet/strana-"),
+		EKONOMIKA ("http://spravy.pravda.sk/ekonomika/strana-"),
+		REGIONY   ("http://spravy.pravda.sk/regiony/strana-"),
+		KULTURA   ("http://kultura.pravda.sk/strana-"),
+		NAZORY    ("http://nazory.pravda.sk/strana-");
 		
 		private final String url;
 		
