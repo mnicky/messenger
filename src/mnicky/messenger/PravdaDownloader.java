@@ -22,7 +22,7 @@ public class PravdaDownloader implements IDownloader {
 	private final Pattern CATEGORY_BASEURL_PATTERN = Pattern.compile("(http://.*pravda.sk/)(?:.*)?");
 	private final int MAX_CATEGORY_SUBPAGE = 300;
 
-	/** Download last 'n' articles from given SME.sk category.
+	/** Download last 'n' articles from given Pravda.sk category.
 	 * 
 	 * @param n how many articles to download
 	 * @param category category to get articles from
@@ -172,10 +172,10 @@ public class PravdaDownloader implements IDownloader {
 
 	/* just for tests */
 	public static void main(String[] args) {
-		PravdaDownloader sme = new PravdaDownloader();
+		PravdaDownloader pravda = new PravdaDownloader();
 		
 		long start1 = System.nanoTime();
-		List<Article> dom = sme.fetchLast(51, Category.KULTURA, 100);
+		List<Article> dom = pravda.fetchLast(51, Category.KULTURA, 100);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
@@ -184,7 +184,7 @@ public class PravdaDownloader implements IDownloader {
 		System.out.println("******************************************");
 		
 		long start2 = System.nanoTime();
-		List<Article> zah = sme.fetchLast(51, Category.NAZORY, 100);
+		List<Article> zah = pravda.fetchLast(51, Category.NAZORY, 100);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);
