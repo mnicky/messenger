@@ -1,7 +1,6 @@
 package mnicky.messenger;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class PravdaDownloader extends ADownloader {
 	
@@ -26,8 +25,8 @@ public class PravdaDownloader extends ADownloader {
 	}
 	
 	@Override
-	protected Pattern categoryBaseURLPattern() {
-		return Pattern.compile("(http://.*pravda.sk/)(?:.*)?");
+	protected String categoryBaseURLRegexp() {
+		return "(http://.*pravda.sk/)(?:.*)?";
 	}
 	
 	@Override

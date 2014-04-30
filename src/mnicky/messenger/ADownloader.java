@@ -13,15 +13,17 @@ import org.jsoup.select.Elements;
 
 public abstract class ADownloader {
 	
-	abstract protected Pattern categoryBaseURLPattern();
+	abstract protected String categoryBaseURLRegexp();
 	abstract protected int maxCategorySubpageNumber();
-	
+
 	abstract protected String[] categoryArticleLinkSelectors();
 	abstract protected String[] articleDateSelectors();
 	abstract protected String[] articleTitleSelectors();
 	abstract protected String[] articlePerexSelectors();
-	abstract protected String[] articleTextSelectors();	
-	
+	abstract protected String[] articleTextSelectors();
+
+	protected Pattern categoryBaseURLPattern = null;
+
 	/** Download last 'n' articles from given category.
 	 * 
 	 * @param n how many articles to download
@@ -143,7 +145,11 @@ public abstract class ADownloader {
 	
 	//TODO: refactor into one function
 	private String baseURL(final String categoryUrl) {
-		final Matcher m = categoryBaseURLPattern().matcher(categoryUrl);
+
+		if (categoryBaseURLPattern == null)
+			categoryBaseURLPattern = Pattern.compile(categoryBaseURLRegexp());
+
+		final Matcher m = categoryBaseURLPattern.matcher(categoryUrl);
 		if (m.matches() && m.groupCount() > 0)
 			return m.group(1);
 		else

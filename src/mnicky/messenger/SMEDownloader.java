@@ -42,8 +42,8 @@ public class SMEDownloader extends ADownloader {
 	}
 
 	@Override
-	protected Pattern categoryBaseURLPattern() {
-		return Pattern.compile("(http://.*sme.sk)(?:/.*)?");
+	protected String categoryBaseURLRegexp() {
+		return "(http://.*sme.sk)(?:/.*)?";
 	}
 
 	@Override
