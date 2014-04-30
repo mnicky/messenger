@@ -11,23 +11,17 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public abstract class Downloader implements IDownloader {
-
-	public static enum Category implements ICategory {
-		DOMACE, SVET, EKONOMIKA, REGIONY, KULTURA, NAZORY
-	}
-
-	//TODO: use desktop useragent? 
-	//private final String USERAGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36";
-	protected final Pattern CATEGORY_BASEURL_PATTERN = Pattern.compile("(http://.*pravda.sk/)(?:.*)?");
-	protected final int MAX_CATEGORY_SUBPAGE = 300;
+public abstract class ADownloader {
 	
-	protected final String[] CATEGORY_ARTICLE_LINK_SELECTORS = {".rubrikovy_nahlad_clanku h3 a.nadpis_nahlad_clanku", ".rubrikovy_nahlad_clanku_top h2 a"};
-	protected static final String[] ARTICLE_DATE_SELECTORS = {".article-metadata .article-datetime"};
-	protected static final String[] ARTICLE_TEXT_SELECTORS = {".content_case .pokracovanie_clanku p"};
-	protected static final String[] ARTICLE_PEREX_SELECTORS = {".content_case .article-perex"};
-	protected static final String[] ARTICLE_TITLE_SELECTORS = {".content_case h1"};
-
+	abstract protected Pattern categoryBaseURLPattern();
+	abstract protected int maxCategorySubpageNumber();
+	
+	abstract protected String[] categoryArticleLinkSelectors();
+	abstract protected String[] articleDateSelectors();
+	abstract protected String[] articleTitleSelectors();
+	abstract protected String[] articlePerexSelectors();
+	abstract protected String[] articleTextSelectors();	
+	
 	/** Download last 'n' articles from given category.
 	 * 
 	 * @param n how many articles to download
@@ -38,17 +32,17 @@ public abstract class Downloader implements IDownloader {
 	public List<Article> fetchLast(int n, ICategory category, int delay) {
 		final List<Article> articles = new ArrayList<Article>();
 		final int max = n;
-		final String categoryUrl = categoryURL((Category)category);
+		final String categoryUrl = category.getUrl();
 		
 		int categorySubpage = 1;
-		while (articles.size() < max && categorySubpage <= MAX_CATEGORY_SUBPAGE) {
+		while (articles.size() < max && categorySubpage <= maxCategorySubpageNumber()) {
 			
 			//get article urls from the next category subpage
 			final List<String> articleUrls = getArticleURLs(categoryUrl + categorySubpage);
 			
 			//fetch articles
 			for (final String url : articleUrls) {
-				final Article article = getArticle(url, (Category)category);
+				final Article article = getArticle(url, category);
 				if (article != null) {
 					articles.add(article);
 				}
@@ -76,7 +70,7 @@ public abstract class Downloader implements IDownloader {
 		try {
 			final Document page = Jsoup.connect(categoryUrl).get();
 			//FIXME: getElements() doesn't help here, because the first selector already exists, just doesn't contain everything
-			final Elements articleLinks = Util.getElements(page, CATEGORY_ARTICLE_LINK_SELECTORS);
+			final Elements articleLinks = ADownloader.getElements(page, categoryArticleLinkSelectors());
 			for (final Element e : articleLinks) {
 				final String url = e.attr("href").trim();
 				if (!url.isEmpty())
@@ -90,8 +84,8 @@ public abstract class Downloader implements IDownloader {
 	}
 
 	/** Returns parsed article or null if can't parse given url. */
-	private Article getArticle(final String articleUrl, final Category category) {
-		final String fetchUrl = articleUrl;
+	private Article getArticle(final String articleUrl, final ICategory category) {
+		final String fetchUrl = transformArticleURL(articleUrl);
 		Article article = null;
 		
 		if (fetchUrl != null) {
@@ -102,7 +96,7 @@ public abstract class Downloader implements IDownloader {
 				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
 				
 				//parse date
-				final Elements dateElem = Util.getElements(page, ARTICLE_DATE_SELECTORS);
+				final Elements dateElem = ADownloader.getElements(page, articleDateSelectors());
 				Date date = null;
 				if (!dateElem.isEmpty())
 					date = Util.parseDate(dateElem.first().text().trim());
@@ -112,19 +106,19 @@ public abstract class Downloader implements IDownloader {
 				}
 	
 				//parse title
-				final Elements titleElem = Util.getElements(page, ARTICLE_TITLE_SELECTORS);
+				final Elements titleElem = ADownloader.getElements(page, articleTitleSelectors());
 				if (titleElem.isEmpty())
 					return null;
 				final String title = titleElem.first().text().trim();
 				
 				//parse perex
-				final Elements perexElem = Util.getElements(page, ARTICLE_PEREX_SELECTORS);
+				final Elements perexElem = ADownloader.getElements(page, articlePerexSelectors());
 				String perex = "";
 				if (!perexElem.isEmpty())
 					perex = perexElem.first().text().trim();
 				
 				//parse article text
-				final Elements textElem = Util.getElements(page, ARTICLE_TEXT_SELECTORS);
+				final Elements textElem = ADownloader.getElements(page, articleTextSelectors());
 				if (textElem.isEmpty())
 					return null;
 				final String text = textElem.text().trim();				
@@ -139,31 +133,35 @@ public abstract class Downloader implements IDownloader {
 		
 		return article;
 	}
-
-	/**
-	 * Must return base url for the given category. //TODO: make more clear: The url must have the id of the category subpage as its last element and it can't be present.
-	 * @param category
-	 * @return
-	 */
-	abstract protected String categoryURL(final Category category);
 	
-	private String baseURL(final Category category) {
-		final Matcher m = CATEGORY_BASEURL_PATTERN.matcher(categoryURL(category));
+	protected String transformArticleURL(final String articleUrl) {
+		return articleUrl;
+	}
+	private String baseURL(final ICategory category) {
+		return baseURL(category.getUrl());
+	}
+	
+	//TODO: refactor into one function
+	private String baseURL(final String categoryUrl) {
+		final Matcher m = categoryBaseURLPattern().matcher(categoryUrl);
 		if (m.matches() && m.groupCount() > 0)
 			return m.group(1);
 		else
 			return "";
 	}
 	
-	//TODO: abstract public ICategory getCategories() ? Should it return Enum or List or... ??
-	
-	//TODO: refactor into one function
-	private String baseURL(final String categoryUrl) {
-		final Matcher m = CATEGORY_BASEURL_PATTERN.matcher(categoryUrl);
-		if (m.matches() && m.groupCount() > 0)
-			return m.group(1);
-		else
-			return "";
+	//TODO: add AND functionality? (this provides OR). think of proper (composable) abstraction
+	/** Returns parsed elements (tries all selectors in given order) or null if can't find any of given selectors. */
+	public static Elements getElements(final Document doc, final String... selectorsToTry) {
+		Elements elements = new Elements();
+		for (int i = 0; i < selectorsToTry.length; i++) {
+			elements = doc.select(selectorsToTry[i]);
+			if (!elements.isEmpty()) {
+				break;
+			}
+			//TODO: add prints in debug mode
+		}
+		return elements;
 	}
 
 }

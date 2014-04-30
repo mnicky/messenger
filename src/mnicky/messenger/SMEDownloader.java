@@ -1,142 +1,37 @@
 package mnicky.messenger;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+public class SMEDownloader extends ADownloader {
 
-public class SMEDownloader implements IDownloader {
-
+	
 	public static enum Category implements ICategory {
-		DOMACE, ZAHRANICNE, EKONOMIKA_SK, EKONOMIKA_SVET, KULTURA, KOMENTARE
+		
+		DOMACE			("http://www.sme.sk/rubrika.asp?rub=online_zdom&ref=menu&st="),
+		ZAHRANICNE		("http://www.sme.sk/rubrika.asp?rub=online_zahr&ref=menu&st="),
+		EKONOMIKA_SK	("http://ekonomika.sme.sk/r/ekon_sfsr/slovensko.html?st="),
+		EKONOMIKA_SVET	("http://ekonomika.sme.sk/r/ekon_st/svet.html?st=-"),
+		KULTURA			("http://kultura.sme.sk/hs/?st="),
+		KOMENTARE		("http://komentare.sme.sk/hs/?st=");
+		
+		private final String url;
+		
+		Category(final String url) {
+			this.url = url;
+		}
+		
+		public String getUrl() {
+			return this.url;
+		}
 	}
 
-	//TODO: use desktop useragent? 
-	//private final String USERAGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36";
 	private final String ARTICLE_FETCH_URL = "http://s.sme.sk/export/phone/html/?cf=";
 	private final Pattern ARTICLE_ID_PATTERN = Pattern.compile("(?:.*sme.sk)?/c/(\\d+).*");
-	private final Pattern CATEGORY_BASEURL_PATTERN = Pattern.compile("(http://.*sme.sk)(?:/.*)?");
-	private final int MAX_CATEGORY_SUBPAGE = 50;
-
-	/** Download last 'n' articles from given SME.sk category.
-	 * 
-	 * @param n how many articles to download
-	 * @param category category to get articles from
-	 * @param delay how much miliseconds to wait after every article download
-	 * @return list of downloaded Articles
-	 */
-	public List<Article> fetchLast(int n, ICategory category, int delay) {
-		final List<Article> articles = new ArrayList<Article>();
-		final int max = n;
-		final String categoryUrl = categoryURL((Category)category);
-		
-		int categorySubpage = 1;
-		//TODO: add counter of unsuccessful tries and use it to stop downloading
-		while (articles.size() < max && categorySubpage <= MAX_CATEGORY_SUBPAGE) {
-			
-			//get article urls from the next category subpage
-			final List<String> articleUrls = getArticleURLs(categoryUrl + categorySubpage);
-			
-			//fetch articles
-			for (final String url : articleUrls) {
-				final Article article = getArticle(url, (Category)category);
-				if (article != null) {
-					articles.add(article);
-				}
-				else {
-					System.err.println("WARNING: can't fetch or parse article from url: " + url);
-				}
-				try {
-					Thread.sleep(delay);
-				} catch (InterruptedException ie) {
-					ie.printStackTrace();
-				}
-				if (articles.size() >= max)
-					break;
-			}
-			
-			categorySubpage++;
-		}
-
-		return articles;
-	}
-
-	/** Return URLs of articles collected from given category (sub)page */
-	private List<String> getArticleURLs(final String categoryUrl) {
-		final List<String> urls = new ArrayList<String>();
-		try {
-			final Document page = Jsoup.connect(categoryUrl).get();
-			final Elements articleLinks = Util.getElements(page, "#contentw h3 > a");
-			for (final Element e : articleLinks) {
-				final String url = e.attr("href");
-				if (!url.isEmpty())
-					urls.add(url.trim());		
-			}
-		} catch (Exception e) {
-			System.err.println("Exception when parsing article urls from category page: " + categoryUrl);
-			e.printStackTrace();
-		}
-		return urls;
-	}
-
-	/** Returns parsed article or null if can't parse given url. */
-	private Article getArticle(final String articleUrl, final Category category) {
-		final String fetchUrl = makeMobileUrl(articleUrl);
-		Article article = null;
-		
-		if (fetchUrl != null) {
-			try {
-				final Document page = Jsoup.connect(fetchUrl).get();
-				
-				//make url
-				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
-				
-				//parse date
-				final Elements dateElem = Util.getElements(page, ".pagewrap small");
-				Date date = null;
-				if (!dateElem.isEmpty())
-					date = Util.parseDate(dateElem.first().text().trim());
-				if (date == null) {
-					date = new Date();
-					System.err.println("WARNING: can't parse date (and time). The element was: '" + dateElem.toString() + "'");
-				}
-
-				//parse title
-				final Elements titleElem = Util.getElements(page, ".pagewrap h1");
-				if (titleElem.isEmpty())
-					return null;
-				final String title = titleElem.first().text().trim();
-				
-				//parse perex
-				final Elements perexElem = Util.getElements(page, ".pagewrap p strong");
-				String perex = "";
-				if (!perexElem.isEmpty())
-					perex = perexElem.first().text().trim();
-				
-				//parse article text
-				final Elements textElem = Util.getElements(page, ".pagewrap p");
-				if (textElem.isEmpty())
-					return null;
-				final String text = textElem.text().trim();
-				
-				article = new Article(url, date, title, perex, text);
 	
-			} catch (Exception e) {
-				System.err.println("Exception when fetching article from: " + articleUrl + " - " + fetchUrl);
-				e.printStackTrace();
-			}
-		}
-		
-		return article;
-	}
-	
-	private String makeMobileUrl(final String url) {
+	@Override
+	protected String transformArticleURL(final String url) {
 		final Matcher matcher = ARTICLE_ID_PATTERN.matcher(url);
 		if (matcher.matches() && matcher.groupCount() > 0) {
 			return ARTICLE_FETCH_URL + matcher.group(1);
@@ -146,31 +41,44 @@ public class SMEDownloader implements IDownloader {
 		}
 	}
 
-	private String categoryURL(final Category category) {
-		switch (category) {
-			case DOMACE:
-				return "http://www.sme.sk/rubrika.asp?rub=online_zdom&ref=menu&st=";
-			case ZAHRANICNE:
-				return "http://www.sme.sk/rubrika.asp?rub=online_zahr&ref=menu&st=";
-			case EKONOMIKA_SK:
-				return "http://ekonomika.sme.sk/r/ekon_sfsr/slovensko.html?st=";
-			case EKONOMIKA_SVET:
-				return "http://ekonomika.sme.sk/r/ekon_st/svet.html?st=";
-			case KULTURA:
-				return "http://kultura.sme.sk/hs/?st=";
-			case KOMENTARE:
-				return "http://komentare.sme.sk/hs/?st=";
-			default:
-				throw new RuntimeException("Unknown category: " + category);
-			}
+	@Override
+	protected Pattern categoryBaseURLPattern() {
+		return Pattern.compile("(http://.*sme.sk)(?:/.*)?");
 	}
-	
-	private String baseURL(final Category category) {
-		final Matcher m = CATEGORY_BASEURL_PATTERN.matcher(categoryURL(category));
-		if (m.matches() && m.groupCount() > 0)
-			return m.group(1);
-		else
-			return "";
+
+	@Override
+	protected int maxCategorySubpageNumber() {
+		return 50;
+	}
+
+	@Override
+	protected String[] categoryArticleLinkSelectors() {
+		final String[] selectors = {"#contentw h3 > a"};
+		return selectors;
+	}
+
+	@Override
+	protected String[] articleDateSelectors() {
+		final String[] selectors = {".pagewrap small"};
+		return selectors;
+	}
+
+	@Override
+	protected String[] articleTitleSelectors() {
+		final String[] selectors = {".pagewrap h1"};
+		return selectors;
+	}
+
+	@Override
+	protected String[] articlePerexSelectors() {
+		final String[] selectors = {".pagewrap p strong"};
+		return selectors;
+	}
+
+	@Override
+	protected String[] articleTextSelectors() {
+		final String[] selectors = {".pagewrap p"};
+		return selectors;
 	}
 
 	/* just for tests */
@@ -178,7 +86,7 @@ public class SMEDownloader implements IDownloader {
 		SMEDownloader sme = new SMEDownloader();
 		
 		long start1 = System.nanoTime();
-		List<Article> dom = sme.fetchLast(21, Category.KOMENTARE, 300);
+		List<Article> dom = sme.fetchLast(5, Category.KOMENTARE, 300);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
@@ -187,7 +95,7 @@ public class SMEDownloader implements IDownloader {
 		System.out.println("******************************************");
 		
 		long start2 = System.nanoTime();
-		List<Article> zah = sme.fetchLast(21, Category.KULTURA, 300);
+		List<Article> zah = sme.fetchLast(5, Category.KULTURA, 300);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);

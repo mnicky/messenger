@@ -6,9 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 public class Util {
 
 	private static String dateDelimiter = "[\\.\\-/ ]{1,3}";
@@ -23,20 +20,6 @@ public class Util {
 	private static String date = "(?:" + day + dateDelimiter + month + dateDelimiter + year + ")";
 	private static String time = "(?:" + hours + timeDelimiter + minutes + "(?:" +  timeDelimiter + seconds + ")?" + ")";
 	private static Pattern datePattern = Pattern.compile(date + "(?:" +  dateTimeDelimiter + time + ")?");
-	
-	//TODO: add AND functionality? (this provides OR). think of proper abstraction and/or composition
-	/** Returns parsed elements (tries all selectors in given order) or null if can't find any of given selectors. */
-	public static Elements getElements(final Document doc, final String... selectorsToTry) {
-		Elements elements = new Elements();
-		for (int i = 0; i < selectorsToTry.length; i++) {
-			elements = doc.select(selectorsToTry[i]);
-			if (!elements.isEmpty()) {
-				break;
-			}
-			//TODO: add prints in debug mode
-		}
-		return elements;
-	}
 
 	/** Returns date or null if can't parse the given string. */
 	public static Date parseDate(final String dateString) {
@@ -77,7 +60,7 @@ public class Util {
 		
 		return date;
 	}
-
+	
 	//just for tests
 	public static void main(String[] args) {
 		System.out.println(parseDate("28. 4. 2014 17:18:19"));
