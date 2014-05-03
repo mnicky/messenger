@@ -8,10 +8,10 @@ public class HNDownloader extends ADownloader {
 
 	public static enum Category implements ICategory {
 
-		SLOVENSKO    ("http://hn.hnonline.sk/slovensko-119?page="),
+		SLOVENSKO ("http://hn.hnonline.sk/slovensko-119?page="),
 		SVET      ("http://hn.hnonline.sk/svet-120?page=0"),
 		EKONOMIKA ("http://hn.hnonline.sk/ekonomika-a-firmy-117?page="),
-		FINANCIE   ("http://finweb.hnonline.sk/spravy-zo-sveta-financii-126?page=");
+		FINANCIE  ("http://finweb.hnonline.sk/spravy-zo-sveta-financii-126?page=");
 
 		private final String url;
 
@@ -89,6 +89,5 @@ public class HNDownloader extends ADownloader {
 			System.out.println(a);
 		System.out.println("Time elapsed: " + (float)(end2 - start2)/1e9 + "s");
 	}
-
 
 }
