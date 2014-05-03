@@ -143,7 +143,7 @@ public abstract class ADownloader {
 		if (userAgent() != null)
 			conn = conn.userAgent(userAgent());
 		try {
-			doc = conn.get();
+			doc = conn.timeout(15000).get();
 		} catch (IOException e) {
 			System.err.println("Exception when fetching from URL: " + URL);
 			e.printStackTrace();

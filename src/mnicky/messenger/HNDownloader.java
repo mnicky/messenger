@@ -72,16 +72,16 @@ public class HNDownloader extends ADownloader {
 		HNDownloader pravda = new HNDownloader();
 
 		long start1 = System.nanoTime();
-		List<Article> dom = pravda.fetchLast(1, Category.SLOVENSKO, 300);
+		List<Article> dom = pravda.fetchLast(10, Category.SLOVENSKO, 300);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
-		System.out.println("Time elapsed: " + (end1 - start1)/1e9 + "s");
+		System.out.println("Time elapsed: " + (float)(end1 - start1)/1e9 + "s");
 
 		System.out.println("******************************************");
 
 		long start2 = System.nanoTime();
-		List<Article> zah = pravda.fetchLast(1, Category.SLOVENSKO, 1000);
+		List<Article> zah = pravda.fetchLast(10, Category.EKONOMIKA, 300);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);
