@@ -66,10 +66,11 @@ public class PravdaDownloader extends ADownloader {
 
 	/* just for tests */
 	public static void main(String[] args) {
-		PravdaDownloader pravda = new PravdaDownloader();
+		PravdaDownloader downloader = new PravdaDownloader();
+		downloader.debugMode = true;
 
 		long start1 = System.nanoTime();
-		List<Article> dom = pravda.fetchLast(15, Category.DOMACE, 100);
+		List<Article> dom = downloader.fetchLast(15, Category.DOMACE, 100);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
@@ -78,7 +79,7 @@ public class PravdaDownloader extends ADownloader {
 		System.out.println("******************************************");
 
 		long start2 = System.nanoTime();
-		List<Article> zah = pravda.fetchLast(15, Category.NAZORY, 100);
+		List<Article> zah = downloader.fetchLast(15, Category.NAZORY, 100);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);

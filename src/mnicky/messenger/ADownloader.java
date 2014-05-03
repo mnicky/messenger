@@ -52,7 +52,8 @@ public abstract class ADownloader {
 					articles.add(article);
 				}
 				else {
-					System.err.println("WARNING: can't fetch or parse article from url: " + url);
+					if (debugMode)
+						System.err.println("WARNING: can't fetch or parse article from url: " + url);
 				}
 				Util.sleep(delay);
 				if (articles.size() >= max)
@@ -80,8 +81,7 @@ public abstract class ADownloader {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("Exception when parsing article urls from category page: " + categoryUrl);
-			e.printStackTrace();
+			throw new RuntimeException("Exception when parsing article urls from category page: " + categoryUrl, e);
 		}
 		return urls;
 	}
@@ -98,7 +98,8 @@ public abstract class ADownloader {
 
 				//check for paid content etc.
 				if (skipArticle(page)) {
-					System.err.println("NOTE: Skipping article " + articleUrl);
+					if (debugMode)
+						System.err.println("NOTE: Skipping article " + articleUrl);
 					return null;
 				}
 
@@ -112,7 +113,8 @@ public abstract class ADownloader {
 					date = Util.parseDate(dateElem.first().text().trim());
 				if (date == null) {
 					date = new Date();
-					System.err.println("WARNING: can't parse date (and time). The element was: '" + dateElem.toString() + "'");
+					if (debugMode)
+						System.err.println("WARNING: can't parse date (and time). The element was: '" + dateElem.toString() + "'");
 				}
 
 				//parse title
@@ -136,8 +138,7 @@ public abstract class ADownloader {
 				article = new Article(url, date, title, perex, text);
 
 			} catch (Exception e) {
-				System.err.println("Exception when fetching article from: " + articleUrl + " - " + fetchUrl);
-				e.printStackTrace();
+				throw new RuntimeException("Exception when fetching article from: " + articleUrl + " - " + fetchUrl, e);
 			}
 		}
 
@@ -152,8 +153,7 @@ public abstract class ADownloader {
 		try {
 			doc = conn.timeout(15000).get();
 		} catch (IOException e) {
-			System.err.println("Exception when fetching from URL: " + URL);
-			e.printStackTrace();
+			throw new RuntimeException("Exception when fetching from URL: " + URL, e);
 		}
 		return doc;
 	}
@@ -161,6 +161,8 @@ public abstract class ADownloader {
 	protected String userAgent() {
 		return null;
 	}
+
+	protected boolean debugMode = false;
 
 	protected boolean skipArticle(final Document doc) {
 		return false;

@@ -6,22 +6,22 @@ import java.util.regex.Pattern;
 
 public class SMEDownloader extends ADownloader {
 
-	
+
 	public static enum Category implements ICategory {
-		
+
 		DOMACE         ("http://www.sme.sk/rubrika.asp?rub=online_zdom&ref=menu&st="),
 		ZAHRANICNE     ("http://www.sme.sk/rubrika.asp?rub=online_zahr&ref=menu&st="),
 		EKONOMIKA_SK   ("http://ekonomika.sme.sk/r/ekon_sfsr/slovensko.html?st="),
 		EKONOMIKA_SVET ("http://ekonomika.sme.sk/r/ekon_st/svet.html?st=-"),
 		KULTURA        ("http://kultura.sme.sk/hs/?st="),
 		KOMENTARE      ("http://komentare.sme.sk/hs/?st=");
-		
+
 		private final String url;
-		
+
 		Category(final String url) {
 			this.url = url;
 		}
-		
+
 		public String getUrl() {
 			return this.url;
 		}
@@ -29,7 +29,7 @@ public class SMEDownloader extends ADownloader {
 
 	private final String ARTICLE_FETCH_URL = "http://s.sme.sk/export/phone/html/?cf=";
 	private final Pattern ARTICLE_ID_PATTERN = Pattern.compile("(?:.*sme.sk)?/c/(\\d+).*");
-	
+
 	@Override
 	protected String transformArticleURL(final String url) {
 		final Matcher matcher = ARTICLE_ID_PATTERN.matcher(url);
@@ -83,19 +83,20 @@ public class SMEDownloader extends ADownloader {
 
 	/* just for tests */
 	public static void main(String[] args) {
-		SMEDownloader sme = new SMEDownloader();
-		
+		SMEDownloader downloader = new SMEDownloader();
+		downloader.debugMode = true;
+
 		long start1 = System.nanoTime();
-		List<Article> dom = sme.fetchLast(5, Category.KOMENTARE, 300);
+		List<Article> dom = downloader.fetchLast(5, Category.KOMENTARE, 300);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
 		System.out.println("Time elapsed: " + (float)(end1 - start1)/1e9 + "s");
-		
+
 		System.out.println("******************************************");
-		
+
 		long start2 = System.nanoTime();
-		List<Article> zah = sme.fetchLast(5, Category.KULTURA, 300);
+		List<Article> zah = downloader.fetchLast(5, Category.KULTURA, 300);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);

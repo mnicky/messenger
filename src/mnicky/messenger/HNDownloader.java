@@ -71,10 +71,11 @@ public class HNDownloader extends ADownloader {
 
 	/* just for tests */
 	public static void main(String[] args) {
-		HNDownloader pravda = new HNDownloader();
+		HNDownloader downloader = new HNDownloader();
+		downloader.debugMode = true;
 
 		long start1 = System.nanoTime();
-		List<Article> dom = pravda.fetchLast(10, Category.SLOVENSKO, 300);
+		List<Article> dom = downloader.fetchLast(10, Category.SLOVENSKO, 300);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
@@ -83,7 +84,7 @@ public class HNDownloader extends ADownloader {
 		System.out.println("******************************************");
 
 		long start2 = System.nanoTime();
-		List<Article> zah = pravda.fetchLast(10, Category.EKONOMIKA, 300);
+		List<Article> zah = downloader.fetchLast(10, Category.EKONOMIKA, 300);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);
