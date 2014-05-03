@@ -31,7 +31,7 @@ public class PravdaDownloader extends ADownloader {
 	
 	@Override
 	protected int maxCategorySubpageNumber() {
-		return 300;
+		return 300; //up to 1500 available in fact
 	}
 	
 	@Override
