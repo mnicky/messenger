@@ -24,6 +24,7 @@ public abstract class ADownloader {
 	abstract protected String[] articlePerexSelectors();
 	abstract protected String[] articleTextSelectors();
 
+	protected boolean debugMode = false;
 	protected Pattern categoryBaseURLPattern = null;
 
 	/** Download last 'n' articles from given category.
@@ -38,7 +39,7 @@ public abstract class ADownloader {
 		final int max = n;
 		final String categoryUrl = category.getUrl();
 
-		int categorySubpage = 1;
+		int categorySubpage = firstCategorySubpageNumber();
 		while (articles.size() < max && categorySubpage <= maxCategorySubpageNumber()) {
 
 			//get article urls from the next category subpage
@@ -53,7 +54,7 @@ public abstract class ADownloader {
 				}
 				else {
 					if (debugMode)
-						System.err.println("WARNING: can't fetch or parse article from url: " + url);
+						System.err.println("[ERROR] Can't fetch or parse article from url: " + url);
 				}
 				Util.sleep(delay);
 				if (articles.size() >= max)
@@ -74,6 +75,10 @@ public abstract class ADownloader {
 			if (page != null) {
 				//FIXME: getElements() doesn't help here, because the first selector already exists, just doesn't contain everything
 				final Elements articleLinks = ADownloader.getElements(page, categoryArticleLinkSelectors());
+				if (articleLinks.isEmpty()) {
+					if (debugMode)
+						System.err.println("[WARN] Can't find article links.");
+				}
 				for (final Element e : articleLinks) {
 					final String url = e.attr("href").trim();
 					if (!url.isEmpty())
@@ -99,7 +104,7 @@ public abstract class ADownloader {
 				//check for paid content etc.
 				if (skipArticle(page)) {
 					if (debugMode)
-						System.err.println("NOTE: Skipping article " + articleUrl);
+						System.out.println("[INFO] Skipping article " + articleUrl);
 					return null;
 				}
 
@@ -114,13 +119,16 @@ public abstract class ADownloader {
 				if (date == null) {
 					date = new Date();
 					if (debugMode)
-						System.err.println("WARNING: can't parse date (and time). The element was: '" + dateElem.toString() + "'");
+						System.err.println("[ERROR] Can't parse date (and time). The element was: '" + dateElem.first().text().trim() + "'");
 				}
 
 				//parse title
 				final Elements titleElem = ADownloader.getElements(page, articleTitleSelectors());
-				if (titleElem.isEmpty())
+				if (titleElem.isEmpty()) {
+					if (debugMode)
+						System.err.println("[ERROR] Can't find title.");
 					return null;
+				}
 				final String title = titleElem.first().text().trim();
 
 				//parse perex
@@ -128,11 +136,16 @@ public abstract class ADownloader {
 				String perex = "";
 				if (!perexElem.isEmpty())
 					perex = perexElem.first().text().trim();
+				else if (debugMode)
+						System.out.println("[WARN] Can't find perex.");
 
 				//parse article text
 				final Elements textElem = ADownloader.getElements(page, articleTextSelectors());
-				if (textElem.isEmpty())
+				if (textElem.isEmpty()) {
+					if (debugMode)
+						System.err.println("[ERROR] Can't find text.");
 					return null;
+				}
 				final String text = textElem.text().trim();
 
 				article = new Article(url, date, title, perex, text);
@@ -151,6 +164,8 @@ public abstract class ADownloader {
 		if (userAgent() != null)
 			conn = conn.userAgent(userAgent());
 		try {
+			if (debugMode)
+				System.out.println("[INFO] Connecting to " + URL);
 			doc = conn.timeout(15000).get();
 		} catch (IOException e) {
 			throw new RuntimeException("Exception when fetching from URL: " + URL, e);
@@ -162,7 +177,9 @@ public abstract class ADownloader {
 		return null;
 	}
 
-	protected boolean debugMode = false;
+	protected int firstCategorySubpageNumber() {
+		return 1;
+	}
 
 	protected boolean skipArticle(final Document doc) {
 		return false;

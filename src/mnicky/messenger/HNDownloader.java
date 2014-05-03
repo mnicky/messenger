@@ -30,6 +30,11 @@ public class HNDownloader extends ADownloader {
 	}
 
 	@Override
+	protected int firstCategorySubpageNumber() {
+		return 0;
+	}
+
+	@Override
 	protected String categoryBaseURLRegexp() {
 		return "(http://.*hnonline.sk)(?:/.*)?";
 	}
@@ -47,25 +52,25 @@ public class HNDownloader extends ADownloader {
 
 	@Override
 	protected String[] articleDateSelectors() {
-		final String[] selectors = {".article-info-basic .date-display-single"};
+		final String[] selectors = {".article-info-basic .date-display-single", ".inner .content .info b"};
 		return selectors;
 	}
 
 	@Override
 	protected String[] articleTitleSelectors() {
-		final String[] selectors = {"#page-node-title h1"};
+		final String[] selectors = {"#page-node-title h1", ".inner .content h1.title"};
 		return selectors;
 	}
 
 	@Override
 	protected String[] articlePerexSelectors() {
-		final String[] selectors = {".perex p"};
+		final String[] selectors = {".perex p", ".article p.teaser"};
 		return selectors;
 	}
 
 	@Override
 	protected String[] articleTextSelectors() {
-		final String[] selectors = {".content .field-items p"};
+		final String[] selectors = {".content .field-items p", ".node-blog-article .article p"};
 		return selectors;
 	}
 
@@ -75,7 +80,7 @@ public class HNDownloader extends ADownloader {
 		downloader.debugMode = true;
 
 		long start1 = System.nanoTime();
-		List<Article> dom = downloader.fetchLast(10, Category.SLOVENSKO, 300);
+		List<Article> dom = downloader.fetchLast(20, Category.SLOVENSKO, 300);
 		long end1 = System.nanoTime();
 		for (Article a : dom)
 			System.out.println(a);
@@ -84,7 +89,7 @@ public class HNDownloader extends ADownloader {
 		System.out.println("******************************************");
 
 		long start2 = System.nanoTime();
-		List<Article> zah = downloader.fetchLast(10, Category.EKONOMIKA, 300);
+		List<Article> zah = downloader.fetchLast(20, Category.EKONOMIKA, 300);
 		long end2 = System.nanoTime();
 		for (Article a : zah)
 			System.out.println(a);

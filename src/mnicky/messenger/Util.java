@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 public class Util {
 
+	//TODO: parse also months in a word form (e.g. "Apríl")
+
 	private static String dateDelimiter = "[\\.\\-/ ]{1,3}";
 	private static String timeDelimiter = "[\\.:]";
 	private static String dateTimeDelimiter = "[ ]";
