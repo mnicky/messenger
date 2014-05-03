@@ -57,10 +57,18 @@ public class Util {
 			if (cal != null)
 				date = cal.getTime();
 		}
-		
+
 		return date;
 	}
-	
+
+	public static void sleep(final long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}
+	}
+
 	//just for tests
 	public static void main(String[] args) {
 		System.out.println(parseDate("28. 4. 2014 17:18:19"));
@@ -79,5 +87,5 @@ public class Util {
 		System.out.println(parseDate("28 4 2014 07:08"));
 		System.out.println(parseDate("28 / 4 / 2014"));
 	}
-	
+
 }
