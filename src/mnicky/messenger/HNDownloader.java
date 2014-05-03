@@ -2,6 +2,8 @@ package mnicky.messenger;
 
 import java.util.List;
 
+import org.jsoup.nodes.Document;
+
 public class HNDownloader extends ADownloader {
 
 	public static enum Category implements ICategory {
@@ -23,8 +25,8 @@ public class HNDownloader extends ADownloader {
 	}
 
 	@Override
-	protected String userAgent() {
-		return null;//"curl/7.26.0";//"Mozilla/5.0 (Windows NT 6.0; rv:2.0) Gecko/20100101 Firefox/4.0 Opera 12.14";
+	protected boolean skipArticle(final Document doc) {
+		return !getElements(doc, ".ico-locked").isEmpty();
 	}
 
 	@Override

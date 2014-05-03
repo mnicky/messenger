@@ -93,7 +93,14 @@ public abstract class ADownloader {
 		final Document page = getPage(fetchUrl);
 
 		if (fetchUrl != null && page != null) {
+
 			try {
+
+				//check for paid content etc.
+				if (skipArticle(page)) {
+					System.err.println("NOTE: Skipping article " + articleUrl);
+					return null;
+				}
 
 				//make url
 				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
@@ -153,6 +160,10 @@ public abstract class ADownloader {
 
 	protected String userAgent() {
 		return null;
+	}
+
+	protected boolean skipArticle(final Document doc) {
+		return false;
 	}
 
 	protected String transformArticleURL(final String articleUrl) {
