@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,6 +28,8 @@ public abstract class ADownloader {
 
 	protected boolean debugMode = false;
 	protected Pattern categoryBaseURLPattern = null;
+
+	protected Map<String,String> sessionCookies = null;
 
 	/** Download last 'n' articles from given category.
 	 *
@@ -159,10 +163,27 @@ public abstract class ADownloader {
 	}
 
 	protected Document getPage(final String URL) {
+
+		//handle session cookies
+		if (sessionCookies == null) {
+			try {
+				if (debugMode)
+					System.out.println("[INFO] Getting session cookies from " + URL);
+				Response response = Jsoup.connect(URL).method(Connection.Method.GET).execute();
+				sessionCookies = response.cookies();
+			} catch (IOException e) {
+				throw new RuntimeException("Exception when getting session cookies from URL: " + URL, e);
+			}
+		}
+
 		Document doc = null;
 		Connection conn = Jsoup.connect(URL);
 		if (userAgent() != null)
 			conn = conn.userAgent(userAgent());
+		if (sessionCookies != null)
+			conn = conn.cookies(sessionCookies);
+		if (constantCookies() != null)
+			conn = conn.cookies(constantCookies());
 		try {
 			if (debugMode)
 				System.out.println("[INFO] Connecting to " + URL);
@@ -174,6 +195,10 @@ public abstract class ADownloader {
 	}
 
 	protected String userAgent() {
+		return null;
+	}
+
+	protected Map<String,String> constantCookies() {
 		return null;
 	}
 
