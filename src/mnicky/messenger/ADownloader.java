@@ -46,13 +46,24 @@ public abstract class ADownloader {
 		int categorySubpage = firstCategorySubpageNumber();
 		while (articles.size() < max && categorySubpage <= maxCategorySubpageNumber()) {
 
+
 			//get article urls from the next category subpage
-			final List<String> articleUrls = getArticleURLs(categoryUrl + categorySubpage);
+			List<String> articleUrls = new ArrayList<String>();
+			try {
+				articleUrls = getArticleURLs(categoryUrl + categorySubpage);
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
 			Util.sleep(delay);
 
 			//fetch articles
 			for (final String url : articleUrls) {
-				final Article article = getArticle(url, category);
+				Article article = null;
+				try {
+					article = getArticle(url, category);
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+				}
 				if (article != null) {
 					articles.add(article);
 				}
@@ -99,16 +110,17 @@ public abstract class ADownloader {
 	private Article getArticle(final String articleUrl, final ICategory category) {
 		final String fetchUrl = transformArticleURL(articleUrl);
 		Article article = null;
-		final Document page = getPage(fetchUrl);
 
-		if (fetchUrl != null && page != null) {
+		try {
+			final Document page = getPage(fetchUrl);
 
-			try {
+			if (fetchUrl != null && page != null) {
 
-				//check for paid content etc.
+				// check for paid content etc.
 				if (skipArticle(page)) {
 					if (debugMode)
-						System.out.println("[INFO] Skipping article " + articleUrl);
+						System.out.println("[INFO] Skipping article "
+								+ articleUrl);
 					return null;
 				}
 
@@ -126,10 +138,11 @@ public abstract class ADownloader {
 				if (url == null || date == null || title == null || perex == null || text == null)
 					return null;
 				article = new Article(url, date, title, perex, text);
-
-			} catch (Exception e) {
-				throw new RuntimeException("Exception when fetching article from: " + articleUrl + " - " + fetchUrl, e);
 			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Exception when fetching article from: "
+					+ articleUrl + " - " + fetchUrl, e);
 		}
 
 		return article;
