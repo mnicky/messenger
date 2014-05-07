@@ -112,46 +112,18 @@ public abstract class ADownloader {
 					return null;
 				}
 
-				//make url
 				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
-
-				//parse date
-				final Elements dateElem = ADownloader.getElements(page, articleDateSelectors());
-				Date date = null;
-				if (!dateElem.isEmpty())
-					date = Util.parseDate(dateElem.first().text().trim());
-				if (date == null) {
+				Date date = parseArticleDate(page);
+				if (date == null)
 					date = new Date();
-					if (debugMode)
-						System.err.println("[ERROR] Can't parse date (and time). The element was: '" + dateElem.first().text().trim() + "'");
-				}
+				final String title = parseArticleTitle(page);
+				String perex = parseArticlePerex(page);
+				if (perex == null)
+					perex = "";
+				final String text = parseArticleText(page);
 
-				//parse title
-				final Elements titleElem = ADownloader.getElements(page, articleTitleSelectors());
-				if (titleElem.isEmpty()) {
-					if (debugMode)
-						System.err.println("[ERROR] Can't find title.");
+				if (url == null || date == null || title == null || perex == null || text == null)
 					return null;
-				}
-				final String title = titleElem.first().text().trim();
-
-				//parse perex
-				final Elements perexElem = ADownloader.getElements(page, articlePerexSelectors());
-				String perex = "";
-				if (!perexElem.isEmpty())
-					perex = perexElem.first().text().trim();
-				else if (debugMode)
-						System.out.println("[WARN] Can't find perex.");
-
-				//parse article text
-				final Elements textElem = ADownloader.getElements(page, articleTextSelectors());
-				if (textElem.isEmpty()) {
-					if (debugMode)
-						System.err.println("[ERROR] Can't find text.");
-					return null;
-				}
-				final String text = textElem.text().trim();
-
 				article = new Article(url, date, title, perex, text);
 
 			} catch (Exception e) {
@@ -160,6 +132,50 @@ public abstract class ADownloader {
 		}
 
 		return article;
+	}
+
+	/** Returns null on error. */
+	protected String parseArticleText(final Document page) {
+		final Elements textElem = ADownloader.getElements(page, articleTextSelectors());
+		if (textElem.isEmpty()) {
+			if (debugMode)
+				System.err.println("[ERROR] Can't find text.");
+			return null;
+		}
+		return textElem.text().trim();
+	}
+
+	/** Returns null on error. */
+	protected String parseArticlePerex(final Document page) {
+		final Elements perexElem = ADownloader.getElements(page, articlePerexSelectors());
+		if (perexElem.isEmpty()) {
+			if (debugMode)
+				System.err.println("[ERROR] Can't find perex.");
+			return null;
+		}
+		return perexElem.first().text().trim();
+	}
+
+	/** Returns null on error. */
+	protected String parseArticleTitle(final Document page) {
+		final Elements titleElem = ADownloader.getElements(page, articleTitleSelectors());
+		if (titleElem.isEmpty()) {
+			if (debugMode)
+				System.err.println("[ERROR] Can't find title.");
+			return null;
+		}
+		return titleElem.first().text().trim();
+	}
+
+	/** Returns null on error. */
+	protected Date parseArticleDate(final Document page) {
+		final Elements dateElem = ADownloader.getElements(page, articleDateSelectors());
+		Date date = null;
+		if (!dateElem.isEmpty())
+			date = Util.parseDate(dateElem.first().text().trim());
+		if (date == null && debugMode)
+			System.err.println("[ERROR] Can't parse date (and time). Parsed element was: '" + dateElem.first().text().trim() + "'");
+		return date;
 	}
 
 	protected Document getPage(final String URL) {
