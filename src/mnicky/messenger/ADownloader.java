@@ -113,6 +113,7 @@ public abstract class ADownloader {
 				}
 
 				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
+				//TODO: or extract method just from getElements() call?
 				Date date = parseArticleDate(page);
 				if (date == null)
 					date = new Date();
