@@ -155,7 +155,7 @@ public abstract class ADownloader {
 				if (text == null && debugMode)
 					System.err.println("[ERROR] Can't find text.");
 
-				if (url == null || date == null || title == null || perex == null || text == null)
+				if (url == null || date == null || title == null || perex == null || text == null || text.length() < minTextSize())
 					return null;
 
 				article = new Article(url, date, title, perex, text);
@@ -247,6 +247,10 @@ public abstract class ADownloader {
 
 	protected int firstCategorySubpageNumber() {
 		return 1;
+	}
+
+	protected int minTextSize() {
+		return 30;
 	}
 
 	protected boolean skipArticle(final Document doc) {
