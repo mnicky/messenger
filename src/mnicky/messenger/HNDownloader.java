@@ -3,13 +3,14 @@ package mnicky.messenger;
 import java.util.List;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 public class HNDownloader extends ADownloader {
 
 	public static enum Category implements ICategory {
 
 		SLOVENSKO ("http://hn.hnonline.sk/slovensko-119?page="),
-		SVET      ("http://hn.hnonline.sk/svet-120?page=0"),
+		SVET      ("http://hn.hnonline.sk/svet-120?page="),
 		EKONOMIKA ("http://hn.hnonline.sk/ekonomika-a-firmy-117?page="),
 		FINANCIE  ("http://finweb.hnonline.sk/spravy-zo-sveta-financii-126?page=");
 
