@@ -158,6 +158,7 @@ public abstract class ADownloader {
 				if (url == null || date == null || title == null || perex == null || text == null || text.length() < minTextSize())
 					return null;
 
+				//TODO: postCheck() method? (for e.g. minimal number of chars in text, obligatory/voluntary perex etc...)
 				article = new Article(url, date, title, perex, text);
 			}
 
