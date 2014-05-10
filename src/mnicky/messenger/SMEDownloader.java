@@ -69,9 +69,6 @@ public class SMEDownloader extends ADownloader {
 		return selectors;
 	}
 
-	//TODO: some articles doesn't have perex, but it could be obtained from their og:description meta element
-	// e.g. this doesn't have perex: http://komentare.sme.sk/c/7195972/oprana-pravda.html
-	//		this has perex only in the desktop version (not mobile): http://tech.sme.sk/c/7196840/vedci-narazili-na-velku-slnecnu-erupciu-videli-ju-najlepsie.html
 	@Override
 	protected String[] articlePerexSelectors() {
 		final String[] selectors = {".pagewrap p strong", ".pagewrap p"};
