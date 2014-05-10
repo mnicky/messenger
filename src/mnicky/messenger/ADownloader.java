@@ -125,18 +125,39 @@ public abstract class ADownloader {
 				}
 
 				final String url = articleUrl.startsWith("http://") ? articleUrl : baseURL(category) + articleUrl;
-				//TODO: or extract method just from getElements() call?
-				Date date = parseArticleDate(page);
-				if (date == null)
+
+				final String dateString = parseArticleDate(page);
+				Date date = null;
+				if (dateString == null && debugMode) {
+					System.err.println("[ERROR] Can't find date.");
 					date = new Date();
+				}
+				else {
+					date = Util.parseDate(parseArticleDate(page));
+					if (date == null && debugMode) {
+						System.err.println("[ERROR] Can't parse date. Found element was: '" + dateString + "'");
+						date = new Date();
+					}
+				}
+
 				final String title = parseArticleTitle(page);
+				if (title == null && debugMode)
+					System.err.println("[ERROR] Can't find title.");
+
 				String perex = parseArticlePerex(page);
-				if (perex == null)
+				if (perex == null) {
+					if (debugMode)
+						System.err.println("[ERROR] Can't find perex.");
 					perex = "";
+				}
+
 				final String text = parseArticleText(page);
+				if (text == null && debugMode)
+					System.err.println("[ERROR] Can't find text.");
 
 				if (url == null || date == null || title == null || perex == null || text == null)
 					return null;
+
 				article = new Article(url, date, title, perex, text);
 			}
 
@@ -152,8 +173,6 @@ public abstract class ADownloader {
 	protected String parseArticleText(final Document page) {
 		final Elements textElem = ADownloader.getElements(page, articleTextSelectors());
 		if (textElem.isEmpty()) {
-			if (debugMode)
-				System.err.println("[ERROR] Can't find text.");
 			return null;
 		}
 		return textElem.text().trim();
@@ -163,8 +182,6 @@ public abstract class ADownloader {
 	protected String parseArticlePerex(final Document page) {
 		final Elements perexElem = ADownloader.getElements(page, articlePerexSelectors());
 		if (perexElem.isEmpty()) {
-			if (debugMode)
-				System.err.println("[ERROR] Can't find perex.");
 			return null;
 		}
 		return perexElem.first().text().trim();
@@ -174,22 +191,18 @@ public abstract class ADownloader {
 	protected String parseArticleTitle(final Document page) {
 		final Elements titleElem = ADownloader.getElements(page, articleTitleSelectors());
 		if (titleElem.isEmpty()) {
-			if (debugMode)
-				System.err.println("[ERROR] Can't find title.");
 			return null;
 		}
 		return titleElem.first().text().trim();
 	}
 
 	/** Returns null on error. */
-	protected Date parseArticleDate(final Document page) {
+	protected String parseArticleDate(final Document page) {
 		final Elements dateElem = ADownloader.getElements(page, articleDateSelectors());
-		Date date = null;
-		if (!dateElem.isEmpty())
-			date = Util.parseDate(dateElem.first().text().trim());
-		if (date == null && debugMode)
-			System.err.println("[ERROR] Can't parse date (and time). Parsed element was: '" + dateElem.first().text().trim() + "'");
-		return date;
+		if (dateElem.isEmpty()) {
+			return null;
+		}
+		return dateElem.first().text().trim();
 	}
 
 	protected Document getPage(final String URL) {
