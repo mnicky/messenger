@@ -3,7 +3,6 @@ package mnicky.messenger;
 import java.util.List;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 public class HNDownloader extends ADownloader {
 
@@ -65,7 +64,7 @@ public class HNDownloader extends ADownloader {
 
 	@Override
 	protected String[] articlePerexSelectors() {
-		final String[] selectors = {".perex p", ".article p.teaser"};
+		final String[] selectors = {".perex p", ".article p.teaser", ".content .field-items p", ".node-blog-article .article p"};
 		return selectors;
 	}
 

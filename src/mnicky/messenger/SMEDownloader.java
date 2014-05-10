@@ -74,7 +74,7 @@ public class SMEDownloader extends ADownloader {
 	//		this has perex only in the desktop version (not mobile): http://tech.sme.sk/c/7196840/vedci-narazili-na-velku-slnecnu-erupciu-videli-ju-najlepsie.html
 	@Override
 	protected String[] articlePerexSelectors() {
-		final String[] selectors = {".pagewrap p strong"};
+		final String[] selectors = {".pagewrap p strong", ".pagewrap p"};
 		return selectors;
 	}
 
