@@ -12,7 +12,7 @@ public class SMEDownloader extends ADownloader {
 		DOMACE         ("http://www.sme.sk/rubrika.asp?rub=online_zdom&ref=menu&st="),
 		ZAHRANICNE     ("http://www.sme.sk/rubrika.asp?rub=online_zahr&ref=menu&st="),
 		EKONOMIKA_SK   ("http://ekonomika.sme.sk/r/ekon_sfsr/slovensko.html?st="),
-		EKONOMIKA_SVET ("http://ekonomika.sme.sk/r/ekon_st/svet.html?st=-"),
+		EKONOMIKA_SVET ("http://ekonomika.sme.sk/r/ekon_st/svet.html?st="),
 		KULTURA        ("http://kultura.sme.sk/hs/?st="),
 		KOMENTARE      ("http://komentare.sme.sk/hs/?st=");
 
