@@ -231,7 +231,7 @@ public abstract class ADownloader {
 		try {
 			if (debugMode)
 				System.out.println("[INFO] Connecting to " + URL);
-			doc = conn.timeout(15000).get();
+			doc = conn.timeout(30000).get();
 		} catch (IOException e) {
 			throw new RuntimeException("Exception when fetching from URL: " + URL, e);
 		}
