@@ -55,7 +55,7 @@ public class WebnovinyDownloader extends ADownloader {
 
 	@Override
 	protected String[] articlePerexSelectors() {
-		final String[] selectors = {"meta[property=og:description]"};
+		final String[] selectors = {"meta[name=description]"};
 		return selectors;
 	}
 
