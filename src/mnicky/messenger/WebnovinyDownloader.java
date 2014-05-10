@@ -1,8 +1,9 @@
 package mnicky.messenger;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 public class WebnovinyDownloader extends ADownloader {
 
@@ -40,7 +41,6 @@ public class WebnovinyDownloader extends ADownloader {
 		return selectors;
 	}
 
-	//TODO: wouldn't this need separate getArticleDate() method?
 	@Override
 	protected String[] articleDateSelectors() {
 		final String[] selectors = {".article .info"};
@@ -53,11 +53,20 @@ public class WebnovinyDownloader extends ADownloader {
 		return selectors;
 	}
 
-	//TODO: wouldn't this need separate getArticlePerex() method?
 	@Override
 	protected String[] articlePerexSelectors() {
 		final String[] selectors = {"meta[property=og:description]"};
 		return selectors;
+	}
+
+	/** Returns null on error. */
+	@Override
+	protected String parseArticlePerex(final Document page) {
+		final Elements perexElem = WebnovinyDownloader.getElements(page, articlePerexSelectors());
+		if (perexElem.isEmpty()) {
+			return null;
+		}
+		return perexElem.first().attr("content").trim();
 	}
 
 	@Override
