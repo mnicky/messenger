@@ -60,6 +60,7 @@ public class TerazDownloader extends ADownloader {
 	}
 
 	@Override
+	//FIXME: there's probably need for own method
 	protected String[] articleTextSelectors() {
 		final String[] selectors = {".content p"};
 		return selectors;
