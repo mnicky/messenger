@@ -19,7 +19,7 @@ public class Util {
 	private static String seconds = "(\\d{2})";
 	private static String date = "(?:" + day + dateDelimiter + month + dateDelimiter + year + ")";
 	private static String time = "(?:" + hours + timeDelimiter + minutes + "(?:" +  timeDelimiter + seconds + ")?" + ")";
-	private static Pattern datePattern = Pattern.compile(".*" + date + "(?:" +  dateTimeDelimiter + time + ")?" + ".*");
+	private static Pattern datePattern = Pattern.compile(".*?" + date + "(?:" +  dateTimeDelimiter + time + ")?" + ".*?");
 
 	/** Returns date or null if can't parse the given string. */
 	public static Date parseDate(final String givenString) {
@@ -69,6 +69,7 @@ public class Util {
 	private static String preprocessDateString(final String given) {
 
 		//TODO: use StringBuilder
+		//System.out.println(given);
 		String processed = given;
 
 		final Calendar today = new GregorianCalendar();
@@ -128,6 +129,7 @@ public class Util {
 		System.out.println(parseDate("Autor: SITA, 22. Februára 2015 12:12"));
 		System.out.println(parseDate("Autor: SITA, 22. November 2016 12:12"));
 		System.out.println(parseDate("Autor: SITA, 22. novembra 2017 12:12"));
+		System.out.println(parseDate("18.05.2014"));
 	}
 
 }
