@@ -31,6 +31,7 @@ public class EtrendDownloader extends ADownloader {
 	}
 
 	@Override
+	//TODO: use completely own method
 	protected String[] categoryArticleLinkSelectors() {
 		final String[] selectors = {".articles .article a"};
 		return selectors;
