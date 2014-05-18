@@ -4,10 +4,6 @@ import java.util.List;
 
 public class TerazDownloader extends ADownloader {
 
-	//NOTES:
-	// http://www.etrend.sk/services/RSSwidget.html?count=50&subtitle=false&name=TREND.sk&target=false&width=300&height=250&sections[]=7
-	// http://www.etrend.sk/services/RSSwidget.html?count=50&subtitle=false&name=TREND.sk&target=false&width=300&height=250&sections[]=6
-
 	public static enum Category implements ICategory {
 
 		SLOVENSKO	("http://www.teraz.sk/slovensko?page="),
