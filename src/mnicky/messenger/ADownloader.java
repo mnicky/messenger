@@ -83,7 +83,7 @@ public abstract class ADownloader {
 	}
 
 	/** Return URLs of articles collected from given category (sub)page */
-	private List<String> getArticleURLs(final String categoryUrl) {
+	protected List<String> getArticleURLs(final String categoryUrl) {
 		final List<String> urls = new ArrayList<String>();
 		try {
 			final Document page = getPage(categoryUrl);
@@ -107,7 +107,7 @@ public abstract class ADownloader {
 	}
 
 	/** Returns parsed article or null if can't parse given url. */
-	private Article getArticle(final String articleUrl, final ICategory category) {
+	protected Article getArticle(final String articleUrl, final ICategory category) {
 		final String fetchUrl = transformArticleURL(articleUrl);
 		Article article = null;
 
@@ -261,12 +261,12 @@ public abstract class ADownloader {
 	protected String transformArticleURL(final String articleUrl) {
 		return articleUrl;
 	}
-	private String baseURL(final ICategory category) {
+	protected String baseURL(final ICategory category) {
 		return baseURL(category.getUrl());
 	}
 
 	//TODO: refactor into one function
-	private String baseURL(final String categoryUrl) {
+	protected String baseURL(final String categoryUrl) {
 
 		if (categoryBaseURLPattern == null)
 			categoryBaseURLPattern = Pattern.compile(categoryBaseURLRegexp());
