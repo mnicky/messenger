@@ -34,7 +34,6 @@ public class EtrendDownloader extends ADownloader {
 	}
 
 	@Override
-	//TODO: use completely own method
 	protected String[] categoryArticleLinkSelectors() {
 		final String[] selectors = {".articles .article a"};
 		return selectors;
@@ -79,7 +78,7 @@ public class EtrendDownloader extends ADownloader {
 		final int max = n;
 		final String categoryUrl = category.getUrl();
 
-		//get article urls from the next category subpage
+		//get article urls from the widget page
 		List<String> articleUrls = new ArrayList<String>();
 		try {
 			articleUrls = getArticleURLs(categoryUrl.replace("COUNT", Integer.valueOf((int)(max*ARTICLE_COUNT_RESERVE+5)).toString()));
