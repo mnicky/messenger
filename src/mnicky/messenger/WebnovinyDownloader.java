@@ -62,7 +62,7 @@ public class WebnovinyDownloader extends ADownloader {
 	/** Returns null on error. */
 	@Override
 	protected String parseArticlePerex(final Document page) {
-		final Elements perexElem = WebnovinyDownloader.getElements(page, articlePerexSelectors());
+		final Elements perexElem = WebnovinyDownloader.getElementsWithOR(page, articlePerexSelectors());
 		if (perexElem.isEmpty()) {
 			return null;
 		}

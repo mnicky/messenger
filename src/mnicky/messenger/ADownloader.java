@@ -89,7 +89,7 @@ public abstract class ADownloader {
 			final Document page = getPage(categoryUrl);
 			if (page != null) {
 				//FIXME: getElements() doesn't help here, because the first selector already exists, just doesn't contain everything
-				final Elements articleLinks = ADownloader.getElements(page, categoryArticleLinkSelectors());
+				final Elements articleLinks = ADownloader.getElementsWithOR(page, categoryArticleLinkSelectors());
 				if (articleLinks.isEmpty()) {
 					if (debugMode)
 						System.err.println("[WARN] Can't find article links.");
@@ -172,7 +172,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticleText(final Document page) {
-		final Elements textElem = ADownloader.getElements(page, articleTextSelectors());
+		final Elements textElem = ADownloader.getElementsWithOR(page, articleTextSelectors());
 		if (textElem.isEmpty()) {
 			return null;
 		}
@@ -181,7 +181,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticlePerex(final Document page) {
-		final Elements perexElem = ADownloader.getElements(page, articlePerexSelectors());
+		final Elements perexElem = ADownloader.getElementsWithOR(page, articlePerexSelectors());
 		if (perexElem.isEmpty()) {
 			return null;
 		}
@@ -190,7 +190,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticleTitle(final Document page) {
-		final Elements titleElem = ADownloader.getElements(page, articleTitleSelectors());
+		final Elements titleElem = ADownloader.getElementsWithOR(page, articleTitleSelectors());
 		if (titleElem.isEmpty()) {
 			return null;
 		}
@@ -199,7 +199,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticleDate(final Document page) {
-		final Elements dateElem = ADownloader.getElements(page, articleDateSelectors());
+		final Elements dateElem = ADownloader.getElementsWithOR(page, articleDateSelectors());
 		if (dateElem.isEmpty()) {
 			return null;
 		}
@@ -279,14 +279,24 @@ public abstract class ADownloader {
 	}
 
 	//TODO: add AND functionality? (this provides OR). think of proper (composable) abstraction
-	/** Returns parsed elements (tries all selectors in given order) or null if can't find any of given selectors. */
-	public static Elements getElements(final Document doc, final String... selectorsToTry) {
+	/** Returns first parsed of given elements (tries all selectors in given order) */
+	public static Elements getElementsWithOR(final Document doc, final String... selectorsToTry) {
 		Elements elements = new Elements();
 		for (int i = 0; i < selectorsToTry.length; i++) {
 			elements = doc.select(selectorsToTry[i]);
 			if (!elements.isEmpty()) {
 				break;
 			}
+			//TODO: add prints in debug mode
+		}
+		return elements;
+	}
+
+	/** Returns first parsed of given elements (tries all selectors in given order) */
+	public static Elements getElementsWithAND(final Document doc, final String... selectorsToTry) {
+		Elements elements = new Elements();
+		for (int i = 0; i < selectorsToTry.length; i++) {
+			elements.addAll(doc.select(selectorsToTry[i]));
 			//TODO: add prints in debug mode
 		}
 		return elements;
