@@ -278,7 +278,8 @@ public abstract class ADownloader {
 			return "";
 	}
 
-	//TODO: add AND functionality? (this provides OR). think of proper (composable) abstraction
+	//TODO: Think of proper (composable) abstraction of AND and OR for elements parsing
+
 	/** Returns first parsed of given elements (tries all selectors in given order) */
 	public static Elements getElementsWithOR(final Document doc, final String... selectorsToTry) {
 		Elements elements = new Elements();
@@ -287,7 +288,7 @@ public abstract class ADownloader {
 			if (!elements.isEmpty()) {
 				break;
 			}
-			//TODO: add prints in debug mode
+			//TODO: add prints in debug mode?
 		}
 		return elements;
 	}
@@ -297,7 +298,7 @@ public abstract class ADownloader {
 		Elements elements = new Elements();
 		for (int i = 0; i < selectorsToTry.length; i++) {
 			elements.addAll(doc.select(selectorsToTry[i]));
-			//TODO: add prints in debug mode
+			//TODO: add prints in debug mode?
 		}
 		return elements;
 	}
