@@ -36,8 +36,7 @@ public class TerazDownloader extends ADownloader {
 
 	@Override
 	protected String[] categoryArticleLinkSelectors() {
-		//TODO: use AND instead of OR
-		final String[] selectors = {".articles .articlel a", ".mainarticle h2", ".otherarticles h3"};
+		final String[] selectors = { ".mainarticle h2 a", ".otherarticles h3 a", ".articles .articlel a"};
 		return selectors;
 	}
 

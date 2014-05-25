@@ -36,7 +36,7 @@ public class PravdaDownloader extends ADownloader {
 
 	@Override
 	protected String[] categoryArticleLinkSelectors() {
-		final String[] selectors = {".rubrikovy_nahlad_clanku h3 a.nadpis_nahlad_clanku", ".rubrikovy_nahlad_clanku_top h2 a"};
+		final String[] selectors = { ".rubrikovy_nahlad_clanku_top h2 a", ".rubrikovy_nahlad_clanku h3 a.nadpis_nahlad_clanku"};
 		return selectors;
 	}
 

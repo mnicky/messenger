@@ -46,7 +46,7 @@ public class HNDownloader extends ADownloader {
 
 	@Override
 	protected String[] categoryArticleLinkSelectors() {
-		final String[] selectors = {".titulok h3 a", "titulok h2 a"};
+		final String[] selectors = {"titulok h2 a", ".titulok h3 a"};
 		return selectors;
 	}
 
