@@ -26,7 +26,7 @@ public class HNDownloader extends ADownloader {
 
 	@Override
 	protected boolean skipArticle(final Document doc) {
-		return !getElementsWithOR(doc, ".ico-locked").isEmpty();
+		return !getElementsWithAND(doc, ".ico-locked").isEmpty();
 	}
 
 	@Override

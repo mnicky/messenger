@@ -88,8 +88,7 @@ public abstract class ADownloader {
 		try {
 			final Document page = getPage(categoryUrl);
 			if (page != null) {
-				//FIXME: getElements() doesn't help here, because the first selector already exists, just doesn't contain everything
-				final Elements articleLinks = ADownloader.getElementsWithOR(page, categoryArticleLinkSelectors());
+				final Elements articleLinks = ADownloader.getElementsWithAND(page, categoryArticleLinkSelectors());
 				if (articleLinks.isEmpty()) {
 					if (debugMode)
 						System.err.println("[WARN] Can't find article links.");
@@ -172,7 +171,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticleText(final Document page) {
-		final Elements textElem = ADownloader.getElementsWithOR(page, articleTextSelectors());
+		final Elements textElem = ADownloader.getElementsWithAND(page, articleTextSelectors());
 		if (textElem.isEmpty()) {
 			return null;
 		}
@@ -181,7 +180,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticlePerex(final Document page) {
-		final Elements perexElem = ADownloader.getElementsWithOR(page, articlePerexSelectors());
+		final Elements perexElem = ADownloader.getElementsWithAND(page, articlePerexSelectors());
 		if (perexElem.isEmpty()) {
 			return null;
 		}
@@ -190,7 +189,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticleTitle(final Document page) {
-		final Elements titleElem = ADownloader.getElementsWithOR(page, articleTitleSelectors());
+		final Elements titleElem = ADownloader.getElementsWithAND(page, articleTitleSelectors());
 		if (titleElem.isEmpty()) {
 			return null;
 		}
@@ -199,7 +198,7 @@ public abstract class ADownloader {
 
 	/** Returns null on error. */
 	protected String parseArticleDate(final Document page) {
-		final Elements dateElem = ADownloader.getElementsWithOR(page, articleDateSelectors());
+		final Elements dateElem = ADownloader.getElementsWithAND(page, articleDateSelectors());
 		if (dateElem.isEmpty()) {
 			return null;
 		}
