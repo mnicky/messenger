@@ -26,7 +26,7 @@ public abstract class ADownloader {
 	abstract protected String[] articlePerexSelectors();
 	abstract protected String[] articleTextSelectors();
 
-	protected boolean debugMode = false;
+	public boolean debugMode = false;
 	protected Pattern categoryBaseURLPattern = null;
 
 	protected Map<String,String> sessionCookies = null;
